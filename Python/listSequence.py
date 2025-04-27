@@ -11,9 +11,6 @@ class Node:
 
 class ListSequence(Sequence):
     def __init__(self, data=None):
-        """
-        Initialize a list sequence (linked list). If data is provided (list), create nodes with its elements, otherwise start empty.
-        """
         self.head = None
         self._length = 0
         if data is not None:
@@ -109,7 +106,6 @@ class ListSequence(Sequence):
 
 class ImmutableListSequence(ListSequence):
     def __init__(self, data=None):
-        # Initialize without calling superclass to avoid recursion
         self.head = None
         self._length = 0
         if data is not None:

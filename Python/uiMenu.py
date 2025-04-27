@@ -4,10 +4,8 @@ from error import IndexOutOfBoundsError, InvalidInputError
 
 class Menu:
     def __init__(self):
-        self.sequences = []  # list to store sequences
-
+        self.sequences = []  
     def run(self):
-        print("Welcome to the Sequence Manager.")
         while True:
             print("\nMain Menu:")
             print("1. Create new sequence")

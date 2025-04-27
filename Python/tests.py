@@ -1,12 +1,12 @@
 import unittest
 import sys
-sys.path.append('.')  # Ensure current directory is in path for imports
+sys.path.append('.')  
 
 from arraySequence import ArraySequence, ImmutableArraySequence
 from listSequence import ListSequence, ImmutableListSequence, Node
 from option import Option
 from error import IndexOutOfBoundsError, InvalidInputError
-from floyd import detectCycle
+from floyd import detectCycle, findCycleStart
 
 class TestArraySequence(unittest.TestCase):
     def test_append_prepend(self):
@@ -41,9 +41,7 @@ class TestArraySequence(unittest.TestCase):
         new_seq = seq.append(8)
         self.assertIsInstance(new_seq, ImmutableArraySequence)
         self.assertEqual(str(new_seq), 'ImmutableArraySequence([5, 6, 7, 8])')
-        # original should not change
         self.assertEqual(str(seq), 'ImmutableArraySequence([5, 6, 7])')
-        # remove
         seq2 = seq.removeAt(1)
         self.assertEqual(str(seq2), 'ImmutableArraySequence([5, 7])')
         self.assertEqual(str(seq), 'ImmutableArraySequence([5, 6, 7])')
@@ -108,8 +106,51 @@ class TestErrors(unittest.TestCase):
             raise InvalidInputError('Test')
 
 class TestFloyd(unittest.TestCase):
-    def test_detect_cycle_stub(self):
-        self.assertFalse(detectCycle(None))
+    def setUp(self):
+        def build_sequence(values):
+            seq = ListSequence(values)
+            nodes = []
+            current = seq.head
+            while current:
+                nodes.append(current)
+                current = current.next
+            return seq, nodes
+        self.build_sequence = build_sequence
+
+    def test_no_cycle(self):
+        seq, _ = self.build_sequence([1, 2, 3, 4, 5])
+        self.assertFalse(detectCycle(seq))
+        self.assertTrue(findCycleStart(seq).isNone())
+
+    def test_cycle_at_head(self):
+        seq, nodes = self.build_sequence([10, 20, 30])
+        nodes[-1].next = nodes[0]
+        self.assertTrue(detectCycle(seq))
+        start_opt = findCycleStart(seq)
+        self.assertTrue(start_opt.isSome())
+        self.assertEqual(start_opt.get(), 10)
+
+    def test_cycle_in_middle(self):
+        seq, nodes = self.build_sequence([5, 6, 7, 8, 9])
+        nodes[-1].next = nodes[2]
+        self.assertTrue(detectCycle(seq))
+        start_opt = findCycleStart(seq)
+        self.assertTrue(start_opt.isSome())
+        self.assertEqual(start_opt.get(), 7)
+
+    def test_single_node_no_cycle(self):
+        seq, nodes = self.build_sequence([42])
+        self.assertFalse(detectCycle(seq))
+        self.assertTrue(findCycleStart(seq).isNone())
+
+    def test_single_node_cycle_to_self(self):
+        seq, nodes = self.build_sequence([99])
+        nodes[0].next = nodes[0]
+        self.assertTrue(detectCycle(seq))
+        start_opt = findCycleStart(seq)
+        self.assertTrue(start_opt.isSome())
+        self.assertEqual(start_opt.get(), 99)
+
 
 if __name__ == '__main__':
     unittest.main()

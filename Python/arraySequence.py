@@ -1,15 +1,12 @@
+# arraySequence.py
 from sequence import Sequence
 from error import IndexOutOfBoundsError
 
 class ArraySequence(Sequence):
     def __init__(self, data=None):
-        """
-        Initialize an array sequence. If data is provided (list), use its elements, otherwise start with empty list.
-        """
         if data is None:
             self._data = []
         else:
-            # Ensure a copy of the list is stored to avoid aliasing
             self._data = list(data)
 
     def get(self, index):

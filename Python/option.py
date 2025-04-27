@@ -1,8 +1,4 @@
 class Option:
-    """
-    Represents an optional value. Option(value) is Some(value) if value is not None,
-    otherwise represents None.
-    """
     def __init__(self, value):
         self._value = value
 
@@ -21,6 +17,9 @@ class Option:
 
     def isSome(self):
         return self._value is not None
+
+    def isNone(self):
+        return self._value is None
 
     def get(self):
         if self.isEmpty():
